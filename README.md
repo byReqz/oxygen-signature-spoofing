@@ -18,6 +18,12 @@ default folder for builds to end up in, also includes prebuilt zips
 - access to a Linux shell (WSL also works)
 - ADB + drivers if required
 - Java
+- already installed microG (for Android 11 after 11.2.8.8)
+	- [NanoDroid](https://gitlab.com/Nanolx/NanoDroid/) (fully featured)
+	- [microg_installer_revived](https://github.com/nift4/microg_installer_revived) (lightweight)
+- already fully debloated Gapps (for Android 11 after 11.2.8.8)
+	- [xXx](https://forum.xda-developers.com/t/magisk-rom-xxx-nolimits-12-4-op8-op8pro-speed-ram-optimized-oos-h2os-v10-11.4088609/) (fully featured)
+	- [terminal debloater](https://github.com/Magisk-Modules-Repo/terminal_debloater) (lightweight)
 
 ## Android 5-9
 Your system is most likely supported by NanoDroid Patcher and can be patched by flashing the magisk module: https://gitlab.com/Nanolx/NanoDroid
@@ -48,22 +54,29 @@ If manual deodexing is still needed, as for example AOSP 9, you can follow the t
 As far as I know, its not possible to patch the vdex files in OxygenOS 10.
 (for generic Android 10 systems, check here: https://gitlab.com/Nanolx/NanoDroid/-/blob/master/doc/DeodexServices.md#vdex)
 
-## Android 11
+## Android 11 till OxygenOS 11.2.8.8
 1. Boot your phone into TWRP and mount the system
 2. Pull the services.jar from your system
         - `adb pull /system/framework/services.jar`
-        - on OxygenOS you might need to pull from `/system/system/framework/services.jar` or `/system_ext/system/framework/services.jar`
+        - on OxygenOS you might need to pull from `/system/system/framework/services.jar` (pre 11.2.8.8), `/system_ext/system/framework/services.jar` (11.2.8.8) or `/system_root/system/framework/services.jar` (post 11.2.8.8)
 3. Back up the file
         - `cp services.jar services.jar.bak`
 4. Patch the jar using oF2pks' haystack and his custom OxygenOS hook
 	- `java -jar dexpatcher-1.8.0-beta1.jar -a 30 -M -v -d -o ./ services.jar 11-hook-services.jar.dex 11core-services.jar.dex`
 5. add the resulting dex files back into a new jar
 	- `mkdir -p build/system/framework && cd build`
-	- `zip -j system/framekwork/services.jar ../classes*.dex`
+	- `zip -j system/framework/services.jar ../classes*.dex`
 6. replace the services.jar in spoof_AVDapi30.zip
 	- `cp bin/spoof_AVDapi30.zip .`
 	- `zip -u spoof_AVDapi30.zip /system/framework/services.jar`
 7. flash the module (build/spoof_AVDapi30.zip) through Magisk manager while booted into the system
+
+## Android 11 after 11.2.8.8
+1. Enable Magisk Zygote
+2. Install [Lsposed](https://github.com/LSPosed/LSPosed) for Zygisk
+3. Add [FakeGapps](https://github.com/whew-inc/FakeGApps)
+	- Installing the GmsCore and FakeStore is not necessary when using NanoDroid
+	- You only need to enable it for 'Android System' to apply it systemwide
 
 # credits
 this project was mostly inspired by https://gitlab.com/Nanolx/NanoDroid/-/issues/169 and most things here have been derived from that thread. <br>
